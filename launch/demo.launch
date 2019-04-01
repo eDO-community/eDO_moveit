@@ -5,6 +5,9 @@
   <!-- Allow user to specify database location -->
   <arg name="db_path" default="$(find edo_moveit)/default_warehouse_mongo_db" />
 
+  <!-- Set to true if you want this demo to run without a real eDO connected -->
+  <arg name="simulated" default="false" />
+
   <!-- By default, we are not in debug mode -->
   <arg name="debug" default="false" />
 
@@ -23,11 +26,11 @@
     <arg name="load_robot_description" value="true"/>
   </include>
 
-  <!-- If needed, broadcast static tf for robot root -->
-  
+  <!-- Load the robot controllers -->
+  <include unless="$(arg simulated)" file="$(find edo_control)/launch/control.launch"/>
 
-  <!-- We do not have a robot connected, so publish fake joint states -->
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+  <!-- In case of a simulated robot, we do not have a robot connected, so publish fake joint states -->
+  <node if="$(arg simulated)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="use_gui" value="$(arg use_gui)"/>
     <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
   </node>
@@ -38,7 +41,7 @@
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
   <include file="$(find edo_moveit)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
-    <arg name="fake_execution" value="true"/>
+    <arg name="fake_execution" value="$(arg simulated)"/>
     <arg name="info" value="true"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>

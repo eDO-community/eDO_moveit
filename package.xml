@@ -1,7 +1,7 @@
 <package>
 
   <name>edo_moveit</name>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <description>
      An automatically generated package with all the configuration and launch files for using the edo with the MoveIt! Motion Planning Framework
   </description>
@@ -28,6 +28,6 @@
   <!-- <run_depend>warehouse_ros_mongo</run_depend> -->
   <build_depend>edo_description</build_depend>
   <run_depend>edo_description</run_depend>
-
+  <run_depend>edo_control</run_depend>
 
 </package>
