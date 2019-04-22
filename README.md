@@ -12,24 +12,82 @@ git clone https://github.com/ymollard/eDO_moveit.git
 git clone https://github.com/ymollard/eDO_control.git
 git clone https://github.com/Comau/eDO_core_msgs.git
 git clone https://github.com/Comau/eDO_description.git
-pip install getkey
-
+pip install getkey numpy
+cd ..
+catkin_make
 ```
 
-## Quickstart
+## Quickstart with a fake (simualted) eDO robot
 Start MoveIt with a fake eDO:
 ```
 roslaunch edo_moveit demo.launch simulated:=true
 ```
-In order to start MoveIt with an actual eDO, connect the RJ45 cable to eDO, switch your network card to manual addressing with an IP (e.g. 10.42.0.1) and run:
-```
-# Don't forget to set up your environment variables
-export ROS_MASTER_URI=http://10.42.0.49:11311
-export ROS_IP=10.42.0.1    # Your local workstation on which you're running MoveIt
 
-# Calibration procedure is compulsory after any robot boot  
-roslaunch edo_control calibrate.launch
- 
-# Then you can start MoveIt
+## Quickstart with a real eDO robot
+Although other configurations are possible, this package intends to run on a deported workstation connected through Ethernet to a 6-axis e.Do on which an electric gripper is mounted.
+Other configurations (Wifi, no gripper, run on the internal Pi...) might need to tweak a bunch of parameters, as they have not been tested. We do not advise Wifi connection: since joint commands are sent over the network, it might result is jerky trajectories because of Wifi lags.
+
+### 1. Network configuration to be done once
+#### 1.1 Local workstation network
+Before anything, configure your workstation's IP address so that's in the 10.42.0.XXX network. Here we assume `10.42.0.1` so **make sure** you replace all `10.42.0.1` by you own IP if you choose another one.
+
+#### 1.2 EDo's raspi configuration over Ethernet
+Allow your robot to communicate with your local workstation through Ethernet with this configuration step.
+Connect to the EDo's internal Raspberry Pi via SSH:
+```
+ssh edo@10.42.0.49
+```
+Default password is `raspberry`. You should see an italian-speaking `comandi tmux` prompt with explanations about rostopic.
+If you don't, you have trouble in networking configuraiton, or the internal Raspberry Pi does not run.
+
+We need to edit the `ministarter` script:
+```
+nano ~/ministarter
+``` 
+Locate these 2 ROS configuration lines:
+```
+export ROS_MASTER_URI=http://192.168.12.1:11311
+export ROS_IP=192.168.12.1
+```
+and replace them by the IP address of the robot's Ethernet interface:
+```
+export ROS_MASTER_URI=http://10.42.0.49:11311
+export ROS_IP=10.42.0.49
+```
+Press `ctrl=X`, `y` and then `Enter` to valide the filename and overwrite the file.
+
+Type `sudo reboot` to reboot the robot and wait for it to be up again.
+
+#### 1.3 Local workstation ROS config
+setup your ROS environment variables on your local workstation:
+```
+export ROS_MASTER_URI=http://10.42.0.49:11311
+export ROS_IP=10.42.0.1       # Set your workstation's IP instead!
+```
+
+Check that everything is fine: If this command returns the message below, you're done for the ROS network configuration!
+```
+$ rostopic echo /machine_state -n1
+current_state: 0
+opcode: 0
+```
+### 2. Let's start MoveIt with the actual eDO
+### 2.1. Calibration procedure is compulsory after any robot boot
+```
+ roslaunch edo_control calibrate.launch
+```
+You should first see a `JOINT_UNCALIBRATED` warning message and then the explanations for the calibration procedure.
+Follow the instructions every time you see `Calibrating joint X`, press left and right arrow keys to align the joint center marker and press Enter to switch to the next joint.
+
+Go on wth the entire calibration before continuing.
+
+### 2.2 Start MoveIt
+```
 roslaunch edo_moveit demo.launch
 ```
+You can then use the regular MoveIt GUI or generate your own trajectories in `trajectory_msgs/JointTrajectory` format in order to send them to the `/follow_joint_trajectory` action server. See `rosmsg show JointTrajectoryAction` and the [actionlib](http://wiki.ros.org/actionlib) doc.
+
+### Important warnings
+Here are the big missing features and some clues if you want to implemente them:
+* Control won't work without the electric gripper mounted. TODO: Update the `joint_mask` data field everywhere: `joint_mask = 127` means that 7 joints are mounted (joint 7 is the gripper).
+* Control does not actuate the electric gripper: Check how other robots actuate the gripper through ROS, and update the last joint accordingly to the gripper command, currently the gripper is always closed because of the added last joint position value [0.0](https://github.com/ymollard/eDO_control/blob/master/src/edo/states.py#L231).
