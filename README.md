@@ -22,6 +22,12 @@ Start MoveIt with a fake eDO:
 ```
 roslaunch edo_moveit demo.launch simulated:=true
 ```
+You can then use the regular MoveIt GUI or generate your own trajectories:
+
+1. In the `Motion Planning` widget located at the bottom left of the RVIz window, select tab `Planning`
+2. In the 3D robot view, move the blue ball corresponding to the end effector somewhere in space
+3. The orange robot configuration is your new position target, move or rotate it as you want
+4. Click `Plan and Execute` to start moving your simulated robot at this position
 
 ## Quickstart with a real eDO robot
 Although other configurations are possible, this package intends to run on a deported workstation connected through Ethernet to a 6-axis e.Do on which an electric gripper is mounted.
@@ -88,9 +94,18 @@ Go on with the entire calibration before continuing.
 ```
 roslaunch edo_moveit demo.launch
 ```
-You can then use the regular MoveIt GUI or generate your own trajectories in `trajectory_msgs/JointTrajectory` format in order to send them to the `/follow_joint_trajectory` action server. See `rosmsg show JointTrajectoryAction` and the [actionlib](http://wiki.ros.org/actionlib) doc.
+You can then use the regular MoveIt GUI or generate your own trajectories:
+
+1. In the `Motion Planning` widget located at the bottom left of the RVIz window, select tab `Planning`
+2. In the 3D robot view, move the blue ball corresponding to the end effector somewhere in space
+3. The orange robot configuration is your new position target, move or rotate it as you want
+4. Click `Plan and Execute` to start moving your real robot at this position
 
 ### Important warnings
 Here are the big missing features and some clues if you want to implemente them:
 * Control won't work without the electric gripper mounted. TODO: Update the `joint_mask` data field everywhere: `joint_mask = 127` means that 7 joints are mounted (joint 7 is the gripper).
 * Control does not actuate the electric gripper: Check how other robots actuate the gripper through ROS, and update the last joint accordingly to the gripper command, currently the gripper is always closed because of the added last joint position value [0.0](https://github.com/ymollard/eDO_control/blob/master/src/edo/states.py#L231).
+
+### Troubleshooting
+### Motor brakes activate randomly when the robot is moving
+If your trajectory is interrupted by sudden activation of motor brakes followed by automatic brake desengaging and operation resuming, you might have sollicited too much your motors (too much force or too fast).
