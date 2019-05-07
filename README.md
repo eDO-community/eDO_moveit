@@ -10,8 +10,8 @@ It works either with a fake (simulated) robot or with an actual eDO.
 cd ros_ws/src
 git clone https://github.com/ymollard/eDO_moveit.git
 git clone https://github.com/ymollard/eDO_control.git
+git clone https://github.com/ymollard/eDO_description.git
 git clone https://github.com/Comau/eDO_core_msgs.git
-git clone https://github.com/Comau/eDO_description.git
 pip install getkey numpy
 cd ..
 catkin_make
