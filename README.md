@@ -17,7 +17,7 @@ cd ..
 catkin_make
 ```
 
-## Quickstart with a fake (simualted) eDO robot
+## Quickstart with a fake (simulated) eDO robot
 Start MoveIt with a fake eDO:
 ```
 roslaunch edo_moveit demo.launch simulated:=true
