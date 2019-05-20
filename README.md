@@ -11,7 +11,7 @@ cd ros_ws/src
 git clone https://github.com/ymollard/eDO_moveit.git
 git clone https://github.com/ymollard/eDO_control.git
 git clone https://github.com/ymollard/eDO_description.git
-git clone https://github.com/Comau/eDO_core_msgs.git
+git clone https://github.com/ymollard/eDO_core_msgs.git
 pip install getkey numpy
 cd ..
 catkin_make
