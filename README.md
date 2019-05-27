@@ -1,6 +1,6 @@
 # eDO moveit package
 
-This package plans trajectories of eDO robots.
+This package plans trajectories of eDO robots and their electric gripper.
 It works either with a fake (simulated) robot or with an actual eDO.
 
 ![Edo moveit screen](img/screen.png)
@@ -101,10 +101,16 @@ You can then use the regular MoveIt GUI or generate your own trajectories:
 3. The orange robot configuration is your new position target, move or rotate it as you want
 4. Click `Plan and Execute` to start moving your real robot at this position
 
+### 2.3 Open and close the gripper
+Only the 2-finger electric gripper is supported in this package.
+You can publish `true` for opening the gripper (60mm range) and `false` for closing the gripper (0mm range) on the following topic:
+```
+rostopic pub /open_gripper std_msgs/Bool "data: true"
+```
+
 ### Important warnings
 Here are the big missing features and some clues if you want to implemente them:
 * Control won't work without the electric gripper mounted. TODO: Update the `joint_mask` data field everywhere: `joint_mask = 127` means that 7 joints are mounted (joint 7 is the gripper).
-* Control does not actuate the electric gripper: Check how other robots actuate the gripper through ROS, and update the last joint accordingly to the gripper command, currently the gripper is always closed because of the added last joint position value [0.0](https://github.com/ymollard/eDO_control/blob/master/src/edo/states.py#L231).
 
 ### Troubleshooting
 ### Motor brakes activate randomly when the robot is moving
