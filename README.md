@@ -113,5 +113,7 @@ Here are the big missing features and some clues if you want to implemente them:
 * Control won't work without the electric gripper mounted. TODO: Update the `joint_mask` data field everywhere: `joint_mask = 127` means that 7 joints are mounted (joint 7 is the gripper).
 
 ### Troubleshooting
-### Motor brakes activate randomly when the robot is moving
-If your trajectory is interrupted by sudden activation of motor brakes followed by automatic brake desengaging and operation resuming, you might have sollicited too much your motors (too much force or too fast).
+#### Motor brakes activate randomly when the robot is moving
+If your trajectory is interrupted by sudden activation of motor brakes followed by automatic brake desengaging and operation resuming, make sure your robot has been calibrated carefully and precisely. Otherwise you might have sollicited too much your motors (too much force or too fast).
+
+
